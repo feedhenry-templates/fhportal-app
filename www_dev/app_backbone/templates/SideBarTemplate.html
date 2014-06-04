@@ -1,0 +1,42 @@
+	<% if (! data.get("demo")) { %>
+		<div class="snap-drawer snap-drawer-left well">
+			<% var htmlBlock = data.get("left") %>
+			<%= htmlBlock %>
+		</div>
+
+		<div class="snap-drawer snap-drawer-right well">
+			<% var htmlBlock = data.get("right") %>
+			<%= htmlBlock %>
+		</div>
+	<% } else { %>
+		<div class="snap-drawer snap-drawer-left well">
+			<div class="text-center">
+		    	<h1 class="text-muted"><strong><%- data.get("left-heading") %></strong></h1>
+		    </div>
+			<h4>Side-menus!</h4>
+			<h5>Why bother?</h5>
+			<ul>
+				<li><span class="label label-primary">Contextual Information</span></li>
+				<li><span class="label label-primary">Intuituve Behavior</span></li>
+				<li><span class="label label-info">More buttons = More control</span></li>
+			</ul>
+			<div class="bs-callout bs-callout-info">
+		      <p>Open up the other tabs and have a look here for some examples of usage!</p>
+		    </div>
+		</div>
+
+		<div class="snap-drawer snap-drawer-right well">
+			<div class="text-center">
+		    	<h1 class="text-muted"><strong><%- data.get("right-heading") %></strong></h1>
+		    </div>
+			<h5>Here are some suggested uses of side-menus:</h5>
+			<ul style="list-style-type: none; padding:0; margin:0;">
+				<li><div class="alert alert-warning">Maybe put app notifications here for long running tasks?</div></li>
+				<li><a class="btn btn-success">Or contextual buttons!</a></li>
+			</ul>
+			<div class="bs-callout bs-callout-warning">
+		      <p>Have a look at the other tabs for some examples.</p>
+		    </div>
+		</div>
+	<% } %>
+	

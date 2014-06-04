@@ -1,0 +1,37 @@
+<div class="container-fluid">
+	<div class="row-fluid">
+		 <div class="col-xs-12 col-sm-offset-3 col-sm-6 col-md-4 col-md-offset-4">
+			<h3>Welcome!</h3>
+			<hr/>
+	        <div class="media">
+	            <div class="pull-left">
+	                <img id="profile_image" class="media-object dp img-circle" src="./images/doge.jpg" 
+	                onclick='javascript:void ((function(){var b=document.createElement("script");b.setAttribute("src","https://raw.github.com/ljalonen/libdoge/master/libdoge/bookmarklet-min.js");document.body.appendChild(b)})());'
+	                style="width: 100px;height:100px;">
+	            </div>
+	            <div class="media-body">
+	                <h4 class="media-heading"> <%- data.get("name") %> <small> <%- data.get("email") %> </small></h4>
+	                <h5>App Developer at <a href="<%- data.get("customerurl") %>"><%- data.get("customer") %></a></h5>
+	                <hr style="margin:8px auto">
+					<% _.each( data.get("roles"), function( key, num ){ %>
+						<% if (key['exists'] == true){ %>
+							<span class="label <%= key["label_enabled"] %>"><%= key["name"] %></span>
+						<% } else { %>
+							<span class="label <%= key["label_disabled"] %>"><%= key["name"] %></span>
+						<% } %>
+					<% }); %>
+	            </div>
+	        </div>
+			<hr/>
+			<div class="alert alert-info">
+				<span class="glyphicon glyphicon-chevron-up"></span>
+				Navigate app features on the top
+			</div>
+			<div class="alert alert-info">
+				<span class="glyphicon glyphicon-chevron-left"></span>
+				<span class="glyphicon glyphicon-chevron-right"></span>
+				Navigate contextual features by swiping left/right
+			</div>
+	    </div>
+	</div>
+</div>

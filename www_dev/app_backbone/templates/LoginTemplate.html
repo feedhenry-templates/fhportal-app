@@ -1,0 +1,61 @@
+<!-- We have to make the UI simpler for animations! -->
+<!-- https://www.youtube.com/watch?feature=player_embedded&v=ZHxbs5WEQzE -->
+<!-- We have to speed up everything! -->
+<!-- http://addyosmani.com/blog/performance-optimisation-with-timeline-profiles/ -->
+<div class="container-fluid">
+	<div class="row-fluid">
+		<div class="login-container col-xs-12 col-sm-offset-3 col-sm-6 col-md-4 col-md-offset-4">
+            <h3>Sign in to continue</h3>
+            <div class="account-wall">
+                <img class="profile-img" src="./images/doge.jpg" alt="">
+
+                <div class="abs-progress-div">
+	            	<div id="progressBlockCollapse" class="collapse">
+	            		<button type="button" name="circle_state_domain" disabled=disabled class="btn btn-info btn-circle btn-lg circle-state">
+	            			<i class="glyphicon glyphicon-time"></i>
+	            		</button>
+	            		<button type="button" name="circle_state_login" disabled=disabled class="btn btn-info btn-circle btn-lg circle-state">
+	            			<i class="glyphicon glyphicon-time"></i>
+	            		</button>
+	            		<button type="button" name="circle_state_load" disabled=disabled class="btn btn-info btn-circle btn-lg circle-state">
+	            			<i class="glyphicon glyphicon-time"></i>
+	            		</button>
+						<h4>Validating</h4>
+						<div id="progressBlockStatus"></div>
+					</div>
+				</div>
+				
+				<form class="form-signin abs-form-div" id="fhLoginForm">
+					<div id="formBlockCollapse" class="collapse in">
+						<div class="form-group">
+	                        <div class="input-group">
+	                            <span class="input-group-addon input-lg"><span class="glyphicon glyphicon-home"></span></span>
+	                            <input type="text" class="form-control input-lg" name="domain" placeholder="MyDomain.feedhenry.com" value="***REMOVED***" required autofocus />
+	                        </div>
+	                    </div>
+	                    <div class="form-group">
+	                        <div class="input-group">
+	                            <span class="input-group-addon input-lg"><span class="glyphicon glyphicon-user"></span></span>
+	                            <input type="email" class="form-control input-lg" name="user" placeholder="Myself@MyDomain.com" required value="***REMOVED***" />
+	                        </div>
+	                        <div class="input-group">
+	                            <span class="input-group-addon input-lg"><span class="glyphicon glyphicon-lock"></span></span>
+	                            <input type="password" class="form-control input-lg" name="password" placeholder="MyPassword" required value="***REMOVED***" />
+	                        </div>
+	                    </div>
+					</div>
+                	<div class="flt-button-div">
+	                	<div id="loginButtonCollapse" class="collapse in">
+		                	<button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
+		                </div>
+		                <div id="retryButtonCollapse" class="panel-collapse collapse">
+		                	<!-- if you use a button, submit events are fired from it too -->
+		                	<a id="retryLogin" class="btn btn-lg btn-warning btn-block">Retry</a>
+		                </div>
+		            </div>
+                </form>
+
+	        </div>
+		</div>
+	</div>
+</div>	

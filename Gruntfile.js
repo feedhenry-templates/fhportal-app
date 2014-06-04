@@ -7,97 +7,250 @@
 // use this if you want to recursively match all subfolders:
 // 'test/spec/**/*.js'
 
-module.exports = function (grunt) {
+module.exports = function(grunt) {
+    require('load-grunt-tasks')(grunt); // Load grunt tasks automatically
+    require('time-grunt')(grunt); // Time how long tasks take. Can help when optimizing build times
 
-  // Load grunt tasks automatically
-  require('load-grunt-tasks')(grunt);
+    var path = require('path');
 
-  // Time how long tasks take. Can help when optimizing build times
-  require('time-grunt')(grunt);
+    var global_appConfig = { // global set of settings for use with serve manipulation
+        app: 'www_dev',
+        bower_components: 'www_dev/components',
+        dist: 'www',
+        url: '',
+        default_local_server_url: 'http://localhost:8001'
+    }
+    // Define the configuration for all the tasks
+    grunt.initConfig({
+        // configurable paths
+        appConfig: global_appConfig,
 
-  // Define the configuration for all the tasks
-  grunt.initConfig({
-
-    // Project settings
-    app: {
-      // configurable paths
-      app: 'www',
-      url: '',
-      default_local_server_url: 'http://localhost:8001'
-    },
-
-    // Watches files for changes and runs tasks based on the changed files
-    watch: {
-      js: {
-        files: ['<%= app.app %>/scripts/{,*/}*.js'],
-        tasks: ['newer:jshint:all'],
-        options: {
-          livereload: 35730
-        }
-      },
-      styles: {
-        files: ['<%= app.app %>/styles/{,*/}*.css'],
-        tasks: ['newer:copy:styles', 'autoprefixer']
-      },
-      gruntfile: {
-        files: ['Gruntfile.js']
-      },
-      livereload: {
-        options: {
-          livereload: '<%= connect.options.livereload %>'
+        // Watches files for changes and runs tasks based on the changed files
+        watch: {
+            js: {
+                files: ['<%= appConfig.app %>/scripts/{,*/}*.js'],
+                tasks: ['newer:jshint:all'],
+                options: {
+                    livereload: 35730
+                }
+            },
+            styles: {
+                files: ['<%= appConfig.app %>/styles/{,*/}*.css'],
+                tasks: ['newer:copy:styles']
+            },
+            gruntfile: {
+                files: ['Gruntfile.js']
+            },
+            livereload: {
+                options: {
+                    livereload: '<%= connect.options.livereload %>'
+                },
+                files: [
+                    '<%= appConfig.app %>/{,*/}*.html',
+                    '.tmp/styles/{,*/}*.css',
+                    '<%= appConfig.app %>/images/{,*/}*.{png,jpg,jpeg,gif,webp,svg}'
+                ]
+            }
         },
-        files: [
-          '<%= app.app %>/{,*/}*.html',
-          '.tmp/styles/{,*/}*.css',
-          '<%= app.app %>/images/{,*/}*.{png,jpg,jpeg,gif,webp,svg}'
-        ]
-      }
-    },
 
-    // The actual grunt server settings
-    connect: {
-      options: {
-        port: 9002,
-        // Change this to '0.0.0.0' to access the server from outside.
-        hostname: 'localhost',
-        livereload: 35730
-      },
-      livereload: {
-        options: {
-          open: {
-            target: '<%= app.url %>'
-          },
-          base: [
-            '.tmp',
-            '<%= app.app %>'
-          ]
+
+        clean: {
+            options: {
+                force: true
+            },
+            dist: {
+                files: [{
+                    dot: true,
+                    src: [
+                        '.tmp',
+                        '<%= appConfig.dist %>/*',
+                        '!<%= appConfig.dist %>/.git*'
+                    ]
+                }]
+            },
+            server: '.tmp'
+        },
+
+        requirejs: {
+            compile: {
+                options: {
+                    removeCombined: true,
+                    baseUrl: "<%= appConfig.app %>/js",
+                    mainConfigFile: "<%= appConfig.app %>/js/initialize.js",
+                    dir: "<%= appConfig.dist %>/js",
+                    modules: [{
+                        name: "initialize"
+                    }]
+                }
+            }
+        },
+
+        'bower-install': { // Looks at what bower has installed and includes it automagically in index.html
+            app: {
+                directory: '<%= appConfig.app %>/',
+                html: '<%= appConfig.app %>/index.html',
+                ignorePath: '<%= appConfig.app %>/'
+            }
+        },
+
+        useminPrepare: {
+            options: {
+                dest: '<%= appConfig.dist %>'
+            },
+            html: '<%= appConfig.app %>/index.html'
+        },
+        usemin: {
+            options: {
+                dirs: ['<%= appConfig.dist %>']
+            },
+            html: ['<%= appConfig.dist %>/{,*/}*.html'],
+            css: ['<%= appConfig.dist %>/css/{,*/}*.css']
+        },
+        imagemin: {
+            dist: {
+                files: [{
+                    expand: true,
+                    cwd: '<%= appConfig.app %>/images',
+                    src: '{,*/}*.{png,jpg,jpeg}',
+                    dest: '<%= appConfig.dist %>/images'
+                }]
+            }
+        },
+        svgmin: {
+            dist: {
+                files: [{
+                    expand: true,
+                    cwd: '<%= appConfig.app %>/images',
+                    src: '{,*/}*.svg',
+                    dest: '<%= appConfig.dist %>/images'
+                }]
+            }
+        },
+        htmlmin: {
+            dist: {
+                options: {
+
+                },
+                files: [{
+                    expand: true,
+                    cwd: '<%= appConfig.app %>',
+                    src: '*.html',
+                    dest: '<%= appConfig.dist %>'
+                }]
+            }
+        },
+
+        copy: {
+            dist: {
+                files: [{
+                    expand: true,
+                    dot: true,
+                    cwd: '<%= appConfig.app %>',
+                    dest: '<%= appConfig.dist %>',
+                    src: [
+                        '*.{ico,png,txt}',
+                        '.htaccess',
+                        'fhconfig.json',
+                        'images/{,*/}*.{webp,gif}',
+                        'fonts/{,*/}*.*',
+                        'app_backbone/**'
+                    ]
+                }]
+            },
+            styles: {
+                files: [{
+                    expand: true,
+                    dot: true,
+                    cwd: '<%= appConfig.app %>/components/font-awesome/font/',
+                    dest: '<%= appConfig.app %>/fonts/',
+                    src: ['*']
+                }, {
+                    expand: true,
+                    dot: true,
+                    cwd: '<%= appConfig.app %>/components/bootstrap/fonts/',
+                    dest: '<%= appConfig.app %>/fonts/',
+                    src: ['*']
+                }, {
+                    expand: true,
+                    dot: true,
+                    cwd: '<%= appConfig.app %>/css',
+                    dest: '.tmp/css/',
+                    src: '{,*/}*.css'
+                }]
+            }
+        },
+        concurrent: {
+            server: [
+                'copy:styles'
+            ],
+            test: [
+                'copy:styles'
+            ],
+            dist: [
+                'copy:styles',
+                'imagemin',
+                'svgmin',
+                'htmlmin'
+            ]
+        },
+
+        // The actual grunt server settings
+        connect: {
+            options: {
+                port: 9002,
+                // Change this to '0.0.0.0' to access the server from outside.
+                hostname: 'localhost',
+                livereload: 35730
+            },
+            livereload: {
+                options: {
+                    open: {
+                        target: '<%= appConfig.url %>'
+                    },
+                    base: [
+                        '.tmp',
+                        '<%= appConfig.app %>'
+                    ]
+                }
+            }
         }
-      }
-    },
+    });
 
-    // Empties folders to start fresh
-    clean: {
-      server: '.tmp'
-    }
-  });
+    grunt.registerTask('serve', function(target) {
+        if (target === 'local_dev') {
+            var conn = 'http://' + grunt.config.get('connect.options.hostname') + ':' +
+                grunt.config.get('connect.options.port');
+            var url = grunt.option('url') || grunt.config.get('appConfig.default_local_server_url');
+            grunt.config.set('appConfig.url', conn + '/?url=' + url);
+        } else if (target === 'local') {
+            var conn = 'http://' + grunt.config.get('connect.options.hostname') + ':' +
+                grunt.config.get('connect.options.port');
+            var url = grunt.option('url') || grunt.config.get('appConfig.default_local_server_url');
+            grunt.config.set('appConfig.app', global_appConfig.dist);
+        } else {
+            // open with no url passed to fh-js-sdk
+            grunt.config.set('connect.livereload.options.open', true);
+        }
 
-  grunt.registerTask('serve', function (target) {
-    if (target === 'local') {
-      var conn = 'http://' + grunt.config.get('connect.options.hostname') + ':' +
-        grunt.config.get('connect.options.port');
-      var url = grunt.option('url') || grunt.config.get('app.default_local_server_url');
-      grunt.config.set('app.url', conn + '/?url=' + url);
-    } else {
-      // open with no url passed to fh-js-sdk
-      grunt.config.set('connect.livereload.options.open', true);
-    }
+        grunt.task.run([
+            'clean:server',
+            'connect:livereload',
+            'watch'
+        ]);
+    });
 
-    grunt.task.run([
-      'clean:server',
-      'connect:livereload',
-      'watch'
+    grunt.registerTask('build', [
+        'clean:dist',
+        'requirejs',
+        'bower-install',
+        'useminPrepare',
+        'cssmin',
+        'concat',
+        'uglify',
+        'concurrent:dist',
+        'copy:dist',
+        'usemin'
     ]);
-  });
 
-  grunt.registerTask('default', ['serve']);
+    grunt.registerTask('default', ['serve']);
 };

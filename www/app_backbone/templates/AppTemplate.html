@@ -1,0 +1,152 @@
+<div class="container-fluid">
+	<div class="row-fluid">
+		 <div class="center-container col-xs-12 col-sm-offset-3 col-sm-6 col-md-4 col-md-offset-4">
+		 	<h4>
+				<div class="alert alert-info">
+					App List & Stats
+				</div>
+			</h4>
+			<div id="introBody" class="collapse in">
+				<hr/>
+				<div class="alert alert-warning">
+					Here we will request a list of all apps in the specified feedhenry platform, present them nicely, and retrieve information regarding the app upon any of them being clicked.
+				</div>
+				<button id="processStartBtn" class="btn btn-primary btn-large btn-fullwidth"><i class="glyphicon glyphicon-cog"></i> Process App Data</button>
+			</div>
+
+			<div id="appBody" class="collapse in">
+				<div name="appHeader"></div>
+				<div name="appSummary"></div>
+			</div>
+			
+			<div id="pageFooter" class="collapse">
+				<hr/>
+				<div class="alert alert-success">
+					<span class="glyphicon glyphicon-chevron-right"></span>
+					Swipe Left To View App Actions
+					<span class="glyphicon glyphicon-chevron-right"></span>
+				</div>
+				<div class="alert alert-success">
+					<span class="glyphicon glyphicon-chevron-left"></span>
+					Swipe Right To Load Another App
+					<span class="glyphicon glyphicon-chevron-left"></span>
+				</div>
+			</div>
+
+	    </div>
+	</div>
+
+
+	<div id='sideBar_leftContent' hidden>
+		<span class="label label-info">Process App Data to populate!</span>
+	</div>
+	
+	<!-- Used when user hits BUILD button for app  -->
+	<div id="buildOptionTemplate" class="well" hidden>
+		<div class="btn-group-vertical">
+		  <button type="button" destination="android" class="btn btn-info">Android</button>
+		  <button type="button" destination="iphone" class="btn btn-info">iPhone</button>
+		  <button type="button" destination="windows" class="btn btn-info">Windows</button>
+		</div>
+		<hr/>
+		<input class="form-control" type="text" placeholder="Private Key Password">
+		<input class="form-control" type="text" placeholder="Certificate Password">
+	<div>
+</div>
+
+<div name="transfer_modal_html_block"> <!-- this gets put in $('#modal-div') -->
+	<!-- Static Modal -->
+	<div class="modal modal-static fade" id="processing-modal">
+	    <div class="modal-dialog">
+	        <div class="modal-content">
+	            <div class="modal-body">
+	                <div class="text-center">
+	                	<div id="process_progress" class="progress progress-striped active">
+						  <div class="progress-bar progress-bar-info" role="progressbar" style="width: 0%">
+						  </div>
+						</div>
+	                    <h4>Processing...</h4>
+	                    <img src="./images/loading.gif" class="icon" />
+	                    <div id="progressBlockStatus" class="modal-nonpadded"></div>
+	                </div>
+	            </div>
+	        </div>
+	    </div>
+	</div>
+
+	<div class="modal modal-static fade" id="build_options-modal">
+		<div class="modal-dialog">
+	        <div class="modal-content" style="height: 320px;">
+	            <div class="modal-body">
+					<h6>Build Platform (Dev/Debug)</h6>
+					<div class="btn-group-vertical btn-group btn-block" name="platform_selection" data-toggle="buttons">
+						<label class="btn btn-info active">
+							<input type="radio" data-type="build_os" build-param="platform" param-value="iphone"> iOS
+						</label>
+						<label class="btn btn-info">
+							<input type="radio" data-type="build_os" build-param="platform" param-value="android"> Android
+						</label>
+					</div>
+					<h6>Key/Cert Passwords</h6>
+				    <div class="input-group">
+						<span class="input-group-addon"><span class="glyphicon glyphicon-warning-sign"></span></span>
+						<input type="password" class="form-control" build-param="privateKeyPass" placeholder="Private Key">
+					</div>
+					<div class="input-group">
+						<span class="input-group-addon"><span class="glyphicon glyphicon-warning-sign"></span></span>
+						<input type="password" class="form-control" build-param="certPass" placeholder="Certificate">
+					</div>
+					<hr/>
+					<div class="btn-group" style="width:100%;">
+						<div class="btn-group" style="width: 50%;">
+							<button type="button" style="width: 100%;" name="btn_fail" class="btn btn-danger"><span class="glyphicon glyphicon-remove"></span></button>
+						</div>
+						<div class="btn-group" style="width: 50%;">
+							<button type="button" style="width: 100%;" name="btn_continue" class="btn btn-success"><span class="glyphicon glyphicon-ok"></span></button>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="modal modal-static fade" id="deploy_options-modal">
+		<div class="modal-dialog">
+	        <div class="modal-content" style="height: 360px;">
+	            <div class="modal-body">
+					<h6>Deploy Target <small>(Dev/Live)</small></h6>
+					<div class="btn-group-vertical btn-group btn-block" name="deploy_env_select" data-toggle="buttons">
+						<label class="btn btn-info active">
+							<input type="radio" deploy-param="deploy_env" param-value="dev"> Dev</label>
+						</label>
+						<label class="btn btn-info">
+							<input type="radio" deploy-param="deploy_env" param-value="live"> Live</label>
+						</label>
+					</div>
+					<h6>Deploy Action</h6>
+				    <div class="btn-group-vertical btn-group btn-block" name="deploy_action_select" data-toggle="buttons">
+						<label class="btn btn-warning active">
+							<input type="radio" deploy-param="deploy_action" param-value="stage"> Stage</label>
+						</label>
+						<label class="btn btn-info">
+							<input type="radio" deploy-param="deploy_action" param-value="start"> Start</label>
+						</label>
+						<label class="btn btn-info">
+							<input type="radio" deploy-param="deploy_action" param-value="stop"> Stop</label>
+						</label>
+					</div>
+					<hr/>
+					<div class="btn-group" style="width:100%;">
+						<div class="btn-group" style="width: 50%;">
+							<button type="button" style="width: 100%;" name="btn_fail" class="btn btn-danger"><span class="glyphicon glyphicon-remove"></span></button>
+						</div>
+						<div class="btn-group" style="width: 50%;">
+							<button type="button" style="width: 100%;" name="btn_continue" class="btn btn-success"><span class="glyphicon glyphicon-ok"></span></button>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+</div>

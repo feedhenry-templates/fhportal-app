@@ -1,0 +1,55 @@
+<div class="container-fluid">
+	<div class="row-fluid">
+		 <div class="center-container col-xs-12 col-sm-offset-3 col-sm-6 col-md-4 col-md-offset-4">
+		 	<h4>
+				<div class="alert alert-info">
+					User Distribution Graph
+				</div>
+			</h4>
+			<div id="introBody" class="collapse in">
+				<div class="alert alert-warning">
+					Here we will request a list of all users in the specified feedhenry platform, and separate them based on the emails used, and the domains.
+				</div>
+				<button id="processStartBtn" class="btn btn-primary btn-large btn-fullwidth"><i class="glyphicon glyphicon-cog"></i> Process User Data</button>
+			</div>
+			<div id="graphBody" class="collapse">
+				<div name="statContainer"></div>
+				<div id="chartLegend"></div>
+
+				<hr/>
+				<div class="alert alert-success">
+					<span class="glyphicon glyphicon-chevron-left"></span>
+					Swipe Left to view user list
+					<span class="glyphicon glyphicon-chevron-left"></span>
+				</div>
+			</div>
+
+	    </div>
+	</div>
+
+
+	<div id='sideBar_rightContent' hidden>
+		<span class="label label-info">Process User Data to populate!</span>
+	</div>
+</div>
+
+<div name="transfer_modal_html_block"> <!-- this gets put in $('#modal-div') -->
+	<!-- Static Modal -->
+	<div class="modal modal-static fade" id="processing-modal">
+	    <div class="modal-dialog">
+	        <div class="modal-content">
+	            <div class="modal-body">
+	                <div class="text-center">
+	                	<div id="process_progress" class="progress progress-striped active">
+						  <div class="progress-bar progress-bar-info" role="progressbar" style="width: 0%">
+						  </div>
+						</div>
+	                    <h4>Processing...</h4>
+	                    <img src="./images/loading.gif" class="icon" />
+	                    <div id="progressBlockStatus" class="modal-nonpadded"></div>
+	                </div>
+	            </div>
+	        </div>
+	    </div>
+	</div>
+</div>

@@ -1,0 +1,46 @@
+Tables:
+	http://backgridjs.com/#examples
+
+Snippets:
+	bootsnip
+
+iOS feel:
+	http://coenraets.org/blog/2012/03/crafting-native-looking-ios-apps-with-html-backbone-js-and-phonegap/
+	https://github.com/ccoenraets/backbone-directory/blob/master/iphone/js/app.js
+
+Notification:
+	https://github.com/fabien-d/alertify.js
+	http://github.hubspot.com/messenger/ -- too heavyweight
+
+# SPLASH
+	# Status
+		http://bootsnipp.com/snippets/featured/circle-button
+
+# INSPIRATION
+http://bootsnipp.com/resources
+http://bootstraphero.com/the-big-badass-list-of-twitter-bootstrap-resources
+
+# Swipe?
+	http://labs.rampinteractive.co.uk/touchSwipe/demos/Any_finger_swipe.html
+	http://example.gajotres.net/iscrollview/
+	https://github.com/frequent/bartender/
+	https://github.com/justinmc/jquery.mobile.fastButtons
+	http://www.jquery4u.com/mobile/mobile-plugins-2013/
+	http://jakiestfu.github.io/Snap.js/demo/apps/default.html
+
+# Performance
+	http://addyosmani.com/blog/performance-optimisation-with-timeline-profiles/
+	http://stackoverflow.com/questions/11623299/what-does-recalculate-layout-paint-mean-in-chrome-developer-tool-timeline-record
+	http://www.html5rocks.com/en/tutorials/speed/quick/#toc-transitions
+	
+# ERROR
+	Error cataloguing through cloud storage - mongoDB.
+	Retrieval in client-side bug-report?
+	Weinre did it
+
+# App stat drilldown
+	List of apps: http://lab.hakim.se/scroll-effects/
+	Click for stats of app: Left sidebar population!
+
+# Explain the code?
+	http://lab.hakim.se/reveal-js

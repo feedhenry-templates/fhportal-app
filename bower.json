@@ -1,0 +1,23 @@
+{
+  "name": "mgmtapp",
+  "version": "0.1.0",
+  "authors": [
+    "Daniel Vagg <daniel.vagg@feedhenry.com>"
+  ],
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "jquery": "~2.0.3",
+    "bootstrap": "~3.0.1",
+    "requirejs": "~2.1.9",
+    "underscore": "~1.5.2",
+    "backbone": "~1.1.0",
+    "font-awesome": "~4.0.3",
+    "snapjs": "6541db7388730ab5143fad5187fec8d41e7e9b26"
+  }
+}

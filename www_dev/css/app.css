@@ -1,0 +1,13 @@
+#sideBarAppList .appListSelectable{
+    opacity: 1;
+    -webkit-transition: all 1s ease;
+    -moz-transition:    all 1s ease;
+    -o-transition:      all 1s ease;
+    -webkit-transform: translate3d(0px,0,0);
+}
+
+#sideBarAppList .appListSlideIn{
+    opacity: 0.1;
+    background-color: #afa;
+    -webkit-transform: translate3d(250px,0,0);
+}

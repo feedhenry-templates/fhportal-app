@@ -1,0 +1,112 @@
+body {
+  overflow: "hidden";
+}
+
+#main-window {
+  background: #ddffff;
+  padding-top: 50px;
+  overflow-y: "auto";
+
+}
+
+.centered {
+	text-align: center ;
+}
+
+/* Flyover is used for the error popup */
+.flyover {
+   bottom: -100%;
+   overflow: hidden;
+   position: fixed;
+   width: 100%;
+   opacity: 0.9;
+   z-index: 1050;
+   transition: bottom 0.6s ease-out 0s;
+}
+ 
+.flyover.in {
+   bottom: 0%;
+}
+
+/* Used for the swipe positioning */
+.bs-callout {
+  margin: 20px 0;
+  padding: 20px;
+  border-left: 3px solid #eee;
+}
+
+.bs-callout-info {
+  background-color: #f4f8fa;
+  border-color: #bce8f1;
+}
+
+
+.bs-callout-warning {
+  background-color: #faf8f0;
+  border-color: #faebcc;
+}
+
+.absolute-block {
+  position: absolute;
+  margin-left: auto;
+  margin-right: auto;
+  left: 0;
+  right: 0;
+}
+
+
+#progressBlockCollapse {
+  margin-bottom: 10px;
+}
+
+.progressBlockStatus {
+  padding: 10, 40px;
+}
+
+.circle-state {
+  opacity: 0.8;
+  -webkit-transition: all 0.3s ease;
+  -moz-transition:    all 0.3s ease;
+  -o-transition:      all 0.3s ease;
+}
+
+.btn-circle.btn-lg {
+  width: 50px;
+  height: 50px;
+  padding: 10px 16px;
+  font-size: 18px;
+  line-height: 1.33;
+  border-radius: 25px;
+}
+
+
+.slidein_prepare {
+  position: absolute; 
+  width: 100%;
+  text-align: center;
+  color: white; 
+  opacity: 0.1;
+  -webkit-transition: all 1s ease;
+  -moz-transition:    all 1s ease;
+  -o-transition:      all 1s ease;
+  -webkit-transform: translate3d(50px,0,0);
+}
+
+.slidein_active {
+  opacity: 1;
+  -webkit-transform: translate3d(0px,0,0);
+}
+
+.slidein_finished {
+  opacity: 0;
+  -webkit-transform: translate3d(-50px,0,0);
+}
+
+.btn-fullwidth {
+  display: block; 
+  width: 100%;
+}
+
+.modal-backdrop {
+  top: 0;
+}
