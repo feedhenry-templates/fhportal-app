@@ -2,9 +2,10 @@ define([
     'underscore',
     'jquery',
     'backbone',
+    'util_path/appUtils',
     'model_path/LoginModel',
     'text!template_path/LoginTemplate.html'
-], function(_, $, Backbone, LoginModel, LoginTemplate) {
+], function(_, $, Backbone, utils, LoginModel, LoginTemplate) {
     var LoginView = Backbone.View.extend({
         self: this,
         model: new LoginModel(),
@@ -65,7 +66,7 @@ define([
 
         // kill it
         close: function(closedCallback) {
-            console.log("Closing LoginView")
+            console.info("Closing LoginView")
             $('body').removeClass("gradient_back_1");
             $(this.el).fadeOut(300, function() {
                 App.SideBar.enable();
@@ -100,133 +101,58 @@ define([
 
         validateDomain: function(dataObj) {
             var deferred = $.Deferred();
-            // Send a notification for updating the status
-            deferred.notify({
-                opStatus: 0,
-                textStatus: "Validating Domain..",
-                stateName: "state_domain"
-            });
-            // Perform the operation
-            $fh.act({
-                    act: "auth_validateDomain",
-                    req: {
-                        "domain": dataObj['domain']
-                    }
-                },
-                function(res) {
-                    if (!res.error) { // if no error, notify with success (opStatus = 1)
-                        deferred.notify({
-                            opStatus: 1,
-                            stateName: "state_domain"
-                        });
-                        deferred.resolve(dataObj);
-                    } else { // if error, notify with failure (opStatus = 2)
-                        deferred.notify({
-                            opStatus: 2,
-                            stateName: "state_domain"
-                        });
-                        deferred.reject(res.error);
-                    }
-                },
-                function(errType, res) {
-                    deferred.notify({
-                        opStatus: 2,
-                        stateName: "state_domain"
-                    });
-                    deferred.reject(res.error);
-                }
-            );
+
+            var stateName = "state_domain";
+            var notification = "Validating Domain..";
+            var path = "cloud/auth_validateDomain";
+            var data = {
+                "domain": dataObj['domain']
+            };
+            // Make the call. The response will exist in the dataObj under 'stateName'
+            deferred = utils.deferredCloudCall(dataObj, deferred, stateName, notification, path, data, "0%", "20%");
+
             return deferred.promise();
         },
 
         doLogin: function(dataObj) {
             var deferred = $.Deferred();
-            deferred.notify({
-                opStatus: 0,
-                textStatus: "Validating Login..",
-                stateName: "state_login"
+
+            var stateName = "state_login";
+            var notification = "Validating Login..";
+            var path = "cloud/auth_doLogin";
+            var data = {
+                "u": dataObj['u'],
+                "p": dataObj['p'],
+                "domain": dataObj['domain']
+            };
+            // Make the call. The response will exist in the dataObj under a key matching the value of 'stateName'
+            deferred = utils.deferredCloudCall(dataObj, deferred, stateName, notification, path, data, "30%", "50%", function() {
+                var loginResponse = dataObj['state_login']
+                App.globalUserData.userInfo.set("IDKEY", loginResponse['sessionId']);
+                App.globalUserData.userInfo.set("root", loginResponse['root']);
+                App.globalUserData.userInfo.set("csrftoken", loginResponse['csrftoken']);
+                App.globalUserData.userInfo.set("domain", dataObj['domain']);
             });
-            $fh.act({
-                    act: "auth_doLogin",
-                    req: { // I know the dataObj is basically what I should send, but it may have additional parameters in future
-                        "u": dataObj['u'],
-                        "p": dataObj['p'],
-                        "domain": dataObj['domain']
-                    }
-                },
-                function(res) {
-                    if (!res.error) {
-                        deferred.notify({
-                            opStatus: 1,
-                            stateName: "state_login"
-                        });
-                        App.globalUserData.userInfo.set("IDKEY", res.sessionId);
-                        App.globalUserData.userInfo.set("root", res.root);
-                        App.globalUserData.userInfo.set("csrftoken", res.csrftoken);
-                        App.globalUserData.userInfo.set("domain", dataObj.domain);
-                        deferred.resolve(dataObj);
-                    } else {
-                        deferred.notify({
-                            opStatus: 2,
-                            stateName: "state_login"
-                        });
-                        deferred.reject(res.error);
-                    }
-                },
-                function(errType, res) {
-                    deferred.notify({
-                        opStatus: 2,
-                        stateName: "state_login"
-                    });
-                    deferred.reject(res.error);
-                }
-            );
+
             return deferred.promise();
         },
 
         getUserData: function(dataObj) {
             var deferred = $.Deferred();
-            deferred.notify({
-                opStatus: 0,
-                textStatus: "Preparing App..",
-                stateName: "state_load"
+            var stateName = "state_load";
+            var notification = "Preparing App..";
+            var path = "cloud/auth_getUserData";
+            var data = {
+                "sessionID": App.globalUserData.userInfo.get("IDKEY"),
+                "username": dataObj['u'],
+                "domain": dataObj['domain']
+            };
+            // Make the call. The response will exist in the dataObj under a key matching the value of 'stateName'
+            deferred = utils.deferredCloudCall(dataObj, deferred, stateName, notification, path, data, "30%", "50%", function() {
+                var loadUserDataResponse = dataObj['state_load']
+                App.globalUserData.userInfo.setRoles(loadUserDataResponse['roleInfo']['list']);
+                App.globalUserData.userInfo.setUserInfo(loadUserDataResponse['userInfo']['fields']);
             });
-            $fh.act({
-                    act: "auth_getUserData",
-                    req: {
-                        "sessionID": App.globalUserData.userInfo.get("IDKEY"),
-                        "username": dataObj['u'],
-                        "domain": dataObj['domain']
-                    }
-                },
-                function(res) {
-                    console.log("Response", res);
-                    if (!res.error) {
-                        deferred.notify({
-                            opStatus: 1,
-                            stateName: "state_load"
-                        });
-                        console.log("Setting User Data:", res)
-                        App.globalUserData.userInfo.setRoles(res['roleInfo']['list']);
-                        App.globalUserData.userInfo.setUserInfo(res['userInfo']['fields']);
-                        deferred.resolve(dataObj);
-                    } else {
-                        failureTransit();
-                        deferred.notify({
-                            opStatus: 2,
-                            stateName: "state_load"
-                        });
-                        deferred.reject(res.error);
-                    }
-                },
-                function(errType, res) {
-                    deferred.notify({
-                        opStatus: 2,
-                        stateName: "state_load"
-                    });
-                    deferred.reject(res.error);
-                }
-            );
             return deferred.promise();
         },
 
@@ -281,7 +207,7 @@ define([
         },
 
         transitionProgress: function(notifyObj) {
-            console.log("Received Update", notifyObj)
+            console.info("Received Update", notifyObj)
             var textSlideId = "progressBlockText_" + notifyObj['stateName'];
             var circleStateButton = $('#progressBlockCollapse').find("button[name='circle_" + notifyObj['stateName'] + "']");
 

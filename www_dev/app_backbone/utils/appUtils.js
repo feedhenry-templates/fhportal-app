@@ -1,38 +1,55 @@
 define({
-    deferredActCall: function(dataObj, deferred, stateName, notification, act, req, startPercentage, endPercentage) {
+    /*
+        dataObj: The data object that is passed through deffered chains. This will include a new key:value pair for the response from this call using the key of stateName
+        deferred: The deferred object to add this to. We are including the call itself, and telling it what happens on success or failure
+        stateName: The key to be used for various notifications and storing of responses in the dataObj
+        notificationMsg: The text to be passed with notifications
+        path: The path of the cloud call
+        data: The data to be passed to the cloud call
+        startPercentage: Passed with notifications to be used for adjusting percentage bars and such
+        endPercentage: Passed with notifications to be used for adjusting percentage bars and such
+        onResolve: function to be called within resolution of the call. Putting it here instead of in the next function of the chain prevents syncronous code executing early
+    */
+    deferredCloudCall: function(dataObj, deferred, stateName, notificationMsg, path, data, startPercentage, endPercentage, onResolve) {
         // Send a notification for updating the status
-        console.log("Performing ACT call (%s)", act);
-        console.log("Sending ACT data", req);
+        console.info("Performing $fh.cloud call (%s)", path);
+        console.info("Sending data: ", data);
         deferred.notify($.extend({
             "opStatus": 0,
-            "textStatus": notification,
+            "textStatus": notificationMsg,
             "stateName": stateName,
             "opPercent": startPercentage
         }, dataObj));
         // Perform the operation
-        $fh.act({
-                act: act,
-                req: req
+        $fh.cloud({
+                path: path,
+                data: data
             },
             function(res) {
-                if (!res.error) { // if no error, notify with success (opStatus = 1)
+                if (!res.error) {
+                    // if no error, notify with success (opStatus = 1)
                     deferred.notify($.extend({
                         "opStatus": 1,
-                        "textStatus": notification,
+                        "textStatus": notificationMsg,
                         "stateName": stateName,
                         "opPercent": endPercentage
                     }, dataObj));
-                    console.log("ACT call (%s) succeeded with response:", act, res);
-                    dataObj[stateName] = res;
-                    deferred.resolve(dataObj);
-                } else { // if error, notify with failure (opStatus = 2)
+
+                    console.info("Cloud call (%s) succeeded with response:", path, res);
+                    dataObj[stateName] = res; // Store the response in the dataObj for future access
+                    if (onResolve)
+                        onResolve(); // Now run that onResolve function if it exists
+                    deferred.resolve(dataObj); // Resolve the promise here
+                } else {
+                    // if error, notify with failure (opStatus = 2)
                     deferred.notify($.extend({
                         "opStatus": 2,
-                        "textStatus": notification,
+                        "textStatus": notificationMsg,
                         "stateName": stateName,
                         "opPercent": endPercentage
                     }, dataObj));
-                    console.log("ACT call (%s) failed with response:", act, res);
+
+                    console.error("Cloud call (%s) failed with response:", path, res);
                     deferred.reject({
                         "errorMsg": res.error
                     });
@@ -41,7 +58,7 @@ define({
             function(errType, res) {
                 deferred.notify($.extend({
                     "opStatus": 2,
-                    "textStatus": notification,
+                    "textStatus": notificationMsg,
                     "stateName": stateName,
                     "opPercent": endPercentage
                 }, dataObj));

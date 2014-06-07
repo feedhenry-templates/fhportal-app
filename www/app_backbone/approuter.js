@@ -27,7 +27,7 @@ define([
         },
 
         initialize: function(options) {
-            console.log("Initializing App Router");
+            console.info("Initializing App Router");
             App.TabBarView = new TabBarView().render();
             App.SideBarView = new SideBarView().render();
             App.SideBar = new SideBarView().generateSnapper();
@@ -35,27 +35,27 @@ define([
         },
 
         login: function() {
-            console.log("Routing to Login");
+            console.info("Routing to Login");
             RegionManager.show(new Loginview());
             // fastButtons.replace();
         },
 
         home: function() {
             this.checkLogin(function() {
-                console.log("Routing to Home")
+                console.info("Routing to Home")
                 RegionManager.show(new HomeView());
                 // fastButtons.replace();
             });
         },
 
         logout: function() {
-            console.log("Modifying UserDetail")
+            console.info("Modifying UserDetail")
             App.globalUserData.userInfo.logout();
         },
 
         users: function() {
             this.checkLogin(function() {
-                console.log("Routing to Home")
+                console.info("Routing to Home")
                 RegionManager.show(new UserView());
                 // fastButtons.replace();
             });
@@ -63,20 +63,21 @@ define([
 
         apps: function() {
             this.checkLogin(function() {
-                console.log("Routing to Apps")
+                console.info("Routing to Apps")
                 RegionManager.show(new AppView());
                 // fastButtons.replace();
             });
         },
 
         checkLogin: function(successRenderCB) {
+            console.info("IDKEY is ", App.globalUserData.userInfo.get("IDKEY"));
             if (parseInt(App.globalUserData.userInfo.get("IDKEY"), 16) > 0) { // convert the hex ID to a decimal for comparisons. It is set to 0 if no login available.
                 if ($("#navbar").find(".navbar").is(":hidden")) { // render the navbar if it is hidden and login is ok. THis is a bit convoluted.
                     $("#navbar").find(".navbar").fadeIn(500);
                 }
                 successRenderCB();
             } else {
-                console.log("User Session not found. Redirecting to Login");
+                console.info("User Session not found. Redirecting to Login");
                 App.router.navigate("/login", true);
                 App.globalUserData.userInfo.logout();
             }
@@ -94,22 +95,22 @@ RegionManager = (function(Backbone, $) {
 
 
     var closeView = function(view, closedCallback) {
-        console.log("Attempting Closeview");
+        console.info("Attempting Closeview");
         killMigratedModalHTML();
         App.SideBar.close();
         if (view && view.close) {
             // if we are closing something, pass the rendering of the next page
             // as a callback, to make it look nicer
-            console.log("Closing, calling callback")
+            console.info("Closing, calling callback")
             view.close(closedCallback);
         } else {
-            console.log("Can't close, calling callback")
+            console.info("Can't close, calling callback")
             closedCallback();
         }
     };
 
     var openView = function(view) {
-        console.log("Rendering..")
+        console.info("Rendering..")
         view.render();
         migrateModalHTML(view.el);
 
@@ -121,7 +122,7 @@ RegionManager = (function(Backbone, $) {
     };
 
     var killMigratedModalHTML = function(viewHTML) {
-        console.log("Killing previous modal")
+        console.info("Killing previous modal")
         // Check if a modal was created from the view and destroy it if so
         var modal = $('#modal-div').find(".modal");
         $(modal).remove();
@@ -138,9 +139,9 @@ RegionManager = (function(Backbone, $) {
     }
 
     region.show = function(view) {
-        console.log("Render func called");
+        console.info("Render func called");
         closeView(currentView, function() {
-            console.log("Attempting Open");
+            console.info("Attempting Open");
             currentView = view;
             openView(currentView);
         });

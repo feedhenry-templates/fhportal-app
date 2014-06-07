@@ -46,7 +46,7 @@ define([
 
         render: function() {
             _.templateSettings.variable = "data";
-            console.log("Rendering User")
+            console.info("Rendering User")
             var compiledTemplate = _.template(UserTemplate, {});
             $(this.el).html(compiledTemplate);
             $(this.el).hide();
@@ -124,14 +124,14 @@ define([
         requestUsers: function(dataObj) {
             var stateName = "state_users";
             var notification = "Requesting Users";
-            var act = "user_requestUsers";
-            var req = {
+            var path = "cloud/user_requestUsers";
+            var data = {
                 "domain": dataObj['domain'],
                 "sessionID": dataObj['sessionID']
             };
             // Make the call
             var deferred = $.Deferred();
-            deferred = utils.deferredActCall(dataObj, deferred, stateName, notification, act, req, "30%", "50%");
+            deferred = utils.deferredCloudCall(dataObj, deferred, stateName, notification, path, data, "30%", "50%");
             return deferred.promise();
         },
 
@@ -197,7 +197,7 @@ define([
 
         graphThat: function(dataObj) {
             var deferred = $.Deferred();
-            console.log("Graphing Data:", dataObj.graphBody);
+            console.info("Graphing Data:", dataObj.graphBody);
             hcHelper.renderChartFromData(dataObj.graphBody, $('#graphBody'));
             utils.syncDelay(function() {
                 deferred.resolve(dataObj);
@@ -210,7 +210,7 @@ define([
             var sidePanelDataObj = [];
             var deferred = $.Deferred();
             var sideData = dataObj.graphBody['data'][0]['data']; // bit convoluted, but pulling data out of highchart object
-            console.log("Generating Sidebar Data:", sideData);
+            console.info("Generating Sidebar Data:", sideData);
 
             // get the legend in the graph for colors used and such
             var chartLegend = window.chart01.get().chart.legend.allItems;
@@ -299,7 +299,7 @@ define([
         // COSMETICS
         ////////////////////////////////////
         toggleIntroOrGraph: function(dataObj) {
-            console.log("Toggling intro stuff")
+            console.info("Toggling intro stuff")
             var deferred = $.Deferred();
             if ($('#graphBody').hasClass('in')) {
                 $("#processStartBtn").removeAttr("disabled").text("Process User Data");
@@ -324,7 +324,7 @@ define([
         },
 
         toggleProgressModalShown: function(dataObj) {
-            console.log("Toggling modal")
+            console.info("Toggling modal")
             var deferred = $.Deferred();
             if ($('#processing-modal').hasClass('in')) {
                 $('#processing-modal').modal('hide');
@@ -341,7 +341,7 @@ define([
         },
 
         transitionProgress: function(notifyObj) {
-            console.log("Received Update", notifyObj)
+            console.info("Received Update", notifyObj)
             var textSlideId = "progressBlockText_" + notifyObj['stateName'];
             var operationState = notifyObj['opStatus'];
 

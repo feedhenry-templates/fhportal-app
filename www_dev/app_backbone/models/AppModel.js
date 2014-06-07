@@ -23,7 +23,7 @@ define([
                 }
             }
 
-            console.log("Generating data from", appData);
+            console.info("Generating data from", appData);
             // now generate some beautiful html
             var appHeader = [];
             var appSummary = [];
@@ -93,7 +93,7 @@ define([
         },
 
         generateInstallModal: function(installData) {
-            console.log("Viewing InstallData:", installData);
+            console.info("Viewing InstallData:", installData);
             var ua = navigator.userAgent.toLowerCase();
             var isAndroid = ua.indexOf("android") > -1;
             var appInstallHTML = [];

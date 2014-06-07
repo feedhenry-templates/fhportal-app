@@ -8,16 +8,16 @@
 // It does this by simply replacing 'click' events on document with 'vclick'
 
 var fastButtons = {
-    
+
     replace: function() {
-        console.log("Speeding up click events!");
+        console.info("Speeding up click events!");
         // copy the current click events on document
-        var clickEvents = jQuery.hasData( document ) && jQuery._data( document ).events.click;
+        var clickEvents = jQuery.hasData(document) && jQuery._data(document).events.click;
         clickEvents = jQuery.extend(true, {}, clickEvents);
-        
+
         // remove these click events
         $(document).off('click');
-    
+
         // reset them as vclick events
         for (var i in clickEvents) {
             $(document).on('vclick', clickEvents[i].handler);

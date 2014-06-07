@@ -27,7 +27,7 @@ define([
 
         startProcessFlow: function() {
             var currentView = App.currentView;
-            console.log("Logging Ladda", Ladda);
+            console.info("Logging Ladda", Ladda);
             $.when(currentView.toggleIntro({}))
                 .then(currentView.toggleProgressModalShown)
                 .then(currentView.getLoginID)
@@ -44,7 +44,7 @@ define([
 
         startLoadAppFlow: function(event) {
             var currentView = App.currentView;
-            console.log("Staring App Flow");
+            console.info("Staring App Flow");
             $.when(currentView.getClickedApp({
                 "clicked": this
             }))
@@ -78,15 +78,18 @@ define([
                 .then(currentView.hideFadeLayer)
                 .then(currentView.buttonShowFinished)
                 .then(currentView.presentBuiltApp)
-                .done(function() {
+                .always(function() {
                     var button = $(dataObj['visibleSel']);
                     button.css("z-index", 20);
+                    dataObj['laddaBtn'].stop();
+                })
+                .done(function() {
+                    var button = $(dataObj['visibleSel']);
                     button.css("background-color", dataObj['finishColor']);
                     button.find("span").text("COMPLETE");
                     button.attr("disabled", true);
                     button.attr("action", "");
                     button.unbind("click");
-                    dataObj['laddaBtn'].stop();
                 })
                 .fail(currentView.handleError)
                 .progress(function(dataObj) {
@@ -112,15 +115,17 @@ define([
                 .then(currentView.readCacheKey)
                 .then(currentView.hideFadeLayer)
                 .then(currentView.buttonShowFinished)
-                .done(function() {
+                .always(function() {
                     var button = $(dataObj['visibleSel']);
                     button.css("z-index", 20);
+                    dataObj['laddaBtn'].stop();
+                })
+                .done(function() {
                     button.css("background-color", dataObj['finishColor']);
                     button.find("span").text("COMPLETE");
                     button.attr("disabled", true);
                     button.attr("action", "");
                     button.unbind("click");
-                    dataObj['laddaBtn'].stop();
                 })
                 .fail(currentView.handleError)
                 .progress(function(dataObj) {
@@ -149,7 +154,7 @@ define([
                 .then(currentView.waitForAppState)
                 .then(currentView.hideFadeLayer)
                 .then(currentView.buttonShowFinished)
-                .done(function() {
+                .always(function() {
                     var button = $(dataObj['visibleSel']);
                     button.css("z-index", 20);
                     dataObj['laddaBtn'].stop();
@@ -165,7 +170,7 @@ define([
         #################################### */
 
         getLoginID: function(dataObj) {
-            console.log("Getting Login ID:", dataObj);
+            console.info("Getting Login ID:", dataObj);
             var deferred = $.Deferred();
             var stateName = "get_login";
             var notification = "Getting Login Session";
@@ -207,14 +212,14 @@ define([
             var deferred = $.Deferred();
             var stateName = "state_Apps";
             var notification = "Requesting Apps";
-            var act = "app_requestApps";
-            var req = {
+            var path = "cloud/app_requestApps";
+            var data = {
                 "domain": dataObj['domain'],
                 "sessionID": dataObj['sessionID'],
                 "csrftoken": App.globalUserData.userInfo.get("csrftoken")
             };
             // Make the call. The response will exist in the dataObj under 'stateName'
-            deferred = utils.deferredActCall(dataObj, deferred, stateName, notification, act, req, "30%", "50%");
+            deferred = utils.deferredCloudCall(dataObj, deferred, stateName, notification, path, data, "30%", "50%");
             return deferred.promise();
         },
 
@@ -288,7 +293,7 @@ define([
         getClickedApp: function(dataObj) {
             var deferred = $.Deferred();
             var clickedLink = dataObj['clicked']
-            console.log("Starting app load flow")
+            console.info("Starting app load flow")
             if ($(clickedLink).parent().hasClass('firingSlide') == false) {
                 $(clickedLink).addClass("appListSlideIn");
                 $(clickedLink).parent().addClass("firingSlide");
@@ -326,14 +331,14 @@ define([
             dataObj['requestState'] = stateName;
 
             var notification = "Performing Git Pull";
-            var act = "app_gitPull";
-            var req = {
+            var path = "cloud/app_gitPull";
+            var data = {
                 "domain": dataObj['domain'],
                 "sessionID": dataObj['sessionID'],
                 "appGuid": dataObj['appGuid'],
                 "csrftoken": App.globalUserData.userInfo.get("csrftoken")
             };
-            deferred = utils.deferredActCall(dataObj, deferred, stateName, notification, act, req, "0.2", "0.3");
+            deferred = utils.deferredCloudCall(dataObj, deferred, stateName, notification, path, data, "0.2", "0.3");
             return deferred.promise();
         },
 
@@ -344,8 +349,8 @@ define([
             dataObj['requestState'] = stateName;
 
             var notification = "Performing App Build";
-            var act = "app_build";
-            var req = {
+            var path = "cloud/app_build";
+            var data = {
                 "domain": dataObj['domain'],
                 "appGuid": dataObj['appGuid'],
                 "appID": dataObj['appID'],
@@ -353,7 +358,7 @@ define([
                 "sessionID": dataObj['sessionID'],
                 "csrftoken": App.globalUserData.userInfo.get("csrftoken")
             };
-            deferred = utils.deferredActCall(dataObj, deferred, stateName, notification, act, req, "0.25", "0.4");
+            deferred = utils.deferredCloudCall(dataObj, deferred, stateName, notification, path, data, "0.25", "0.4");
             return deferred.promise();
         },
 
@@ -365,19 +370,18 @@ define([
 
             var notification = "Performing Deploy";
             if (dataObj['deployParams']['action'] == "stage") {
-                var act = "app_stage";
+                var path = "cloud/app_stage";
             } else {
-                var act = "app_deploy";
+                var path = "cloud/app_deploy";
             }
-            var req = {
+            var data = {
                 "domain": dataObj['domain'],
                 "sessionID": dataObj['sessionID'],
                 "deployParams": dataObj['deployParams'],
                 "appGuid": dataObj['appGuid'],
                 "csrftoken": App.globalUserData.userInfo.get("csrftoken")
             };
-            console.log(req);
-            deferred = utils.deferredActCall(dataObj, deferred, stateName, notification, act, req, "0.2", "0.3");
+            deferred = utils.deferredCloudCall(dataObj, deferred, stateName, notification, path, data, "0.2", "0.3");
             return deferred.promise();
         },
 
@@ -388,30 +392,29 @@ define([
             var stateName = "state_appPing";
             var parentCacheRequestID = dataObj.requestState;
             var notification = "Performing App Ping";
-            var act = "app_getState";
-            var req = {
+            var data = {
                 "sessionID": dataObj['sessionID'],
                 "deployParams": dataObj['deployParams']
             };
 
             // get the expected run state from the response of deploy
             if (dataObj[parentCacheRequestID]['expectedRunState']) {
-                req["expectedState"] = dataObj[parentCacheRequestID]['expectedRunState'];
+                data["expectedState"] = dataObj[parentCacheRequestID]['expectedRunState'];
             } else {
-                req["expectedState"] = "STOPPED";
+                data["expectedState"] = "STOPPED";
             };
 
             // If the action performed was a stage, then it should be running.
             if (dataObj['deployParams']['action'] == "stage") {
-                req["expectedState"] = "RUNNING";
+                data["expectedState"] = "RUNNING";
             };
 
             dataObj['opPercent'] = 0.6;
             var stateQueryLoopID = setInterval(function() {
                 try {
-                    appPingCheck(dataObj, req, function(dataObj) {
+                    appPingCheck(dataObj, data, function(dataObj) {
                         try {
-                            if (dataObj['appState'] != req['expectedState']) {
+                            if (dataObj['appState'] != data['expectedState']) {
                                 dataObj['opPercent'] = parseFloat(dataObj['opPercent']) + 0.01; // no useful status info
                                 deferred.notify(dataObj);
                             } else {
@@ -464,35 +467,30 @@ define([
             var stateName = "state_cacheRead";
             var parentCacheRequestID = dataObj.requestState;
 
-            var req = {
+            var data = {
                 "sessionID": dataObj['sessionID'],
                 "cacheKey": dataObj[parentCacheRequestID]['cacheKey']
             };
 
             dataObj['opPercent'] = 0.4;
-            if (req.cacheKey) { // Only wait for the cacheStatus to clear if a cacheKey was present in the last act call response.
+            if (data.cacheKey) { // Only wait for the cacheStatus to clear if a cacheKey was present in the last act call response.
                 var cacheQueryLoopID = setInterval(function() {
-                    try {
-                        cacheKeyCheck(dataObj, req, function(dataObj) {
-                            try {
-                                if (dataObj['cacheStatus']['status'] != "complete") {
-                                    dataObj['opPercent'] = parseFloat(dataObj['opPercent']) + 0.01; // no useful status info
-                                    deferred.notify(dataObj);
-                                } else {
-                                    clearInterval(cacheQueryLoopID);
-                                    deferred.resolve(dataObj);
-                                }
-                            } catch (err) {
-                                clearInterval(cacheQueryLoopID);
-                                throw (err);
-                            }
-                        });
-                    } catch (err) {
-                        clearInterval(cacheQueryLoopID);
-                        throw ({
-                            "errorMsg": err
-                        });
-                    }
+                    cacheKeyCheck(dataObj, data, function(dataObj) {
+                        if (dataObj['cacheStatus']['status'] == "error") {
+                            clearInterval(cacheQueryLoopID);
+                            console.log(dataObj['cacheStatus']);
+                            deferred.reject({
+                                "errorMsg": dataObj['cacheStatus']['error']
+                            });
+                        }
+                        if (dataObj['cacheStatus']['status'] == "complete") {
+                            clearInterval(cacheQueryLoopID);
+                            deferred.resolve(dataObj);
+                        } else {
+                            dataObj['opPercent'] = parseFloat(dataObj['opPercent']) + 0.01; // no useful status info
+                            deferred.notify(dataObj);
+                        }
+                    });
                 }, 2000);
             } else {
                 utils.syncDelay(function() {
@@ -515,14 +513,14 @@ define([
             }
 
             var notification = "Requesting Shortened OTA URL";
-            var act = "app_shortay";
-            var req = {
+            var path = "cloud/app_shortay";
+            var data = {
                 "domain": dataObj['domain'],
                 "sessionID": dataObj['sessionID'],
                 "csrftoken": App.globalUserData.userInfo.get("csrftoken"),
                 "longUrl": longUrl
             };
-            deferred = utils.deferredActCall(dataObj, deferred, stateName, notification, act, req, "0.95", "0.99");
+            deferred = utils.deferredCloudCall(dataObj, deferred, stateName, notification, path, data, "0.95", "0.99");
             return deferred.promise();
         },
 
@@ -662,7 +660,7 @@ define([
 
         toggleIntro: function(dataObj) {
             var deferred = $.Deferred();
-            console.log("Toggling intro stuff")
+            console.info("Toggling intro stuff")
             if ($('#pageFooter').hasClass('in')) {
                 $("#processStartBtn").removeAttr("disabled").text("Process App Data");
                 $('#pageFooter').collapse('hide');
@@ -686,7 +684,7 @@ define([
         },
 
         toggleProgressModalShown: function(dataObj) {
-            console.log("Toggling modal")
+            console.info("Toggling modal")
             var deferred = $.Deferred();
             if ($('#processing-modal').hasClass('in')) {
                 $('#processing-modal').modal('hide');
@@ -703,7 +701,7 @@ define([
         },
 
         transitionProgress: function(notifyObj) {
-            console.log("Received Update", notifyObj)
+            console.info("Received Update", notifyObj)
             var textSlideId = "progressBlockText_" + notifyObj['stateName'];
             var operationState = notifyObj['opStatus'];
 
@@ -741,7 +739,7 @@ define([
 
         render: function() {
             _.templateSettings.variable = "data";
-            console.log("Rendering App")
+            console.info("Rendering App")
             var compiledTemplate = _.template(AppTemplate, {});
             $(this.el).html(compiledTemplate);
             $(this.el).hide();
@@ -782,17 +780,17 @@ define([
     /*##################################
     ## UTIL
     #################################### */
-    var cacheKeyCheck = function(dataObj, req, callback) {
+    var cacheKeyCheck = function(dataObj, data, callback) {
         // Send a notification for updating the status
-        console.log("Performing CacheKey check", req);
+        console.info("Performing CacheKey check", data);
         // Perform the operation
-        $fh.act({
-                act: "app_readCacheKey",
-                req: req
+        $fh.cloud({
+                path: "cloud/app_readCacheKey",
+                data: data
             },
             function(res) {
                 if (!res.error) {
-                    console.log("CacheKey call succeeded with response:", res);
+                    console.info("CacheKey call succeeded with response:", res);
                     dataObj['cacheStatus'] = res[0];
                     callback(dataObj);
                 } else {
@@ -805,22 +803,22 @@ define([
         );
     }
 
-    var appPingCheck = function(dataObj, req, callback) {
+    var appPingCheck = function(dataObj, data, callback) {
         // Send a notification for updating the status
-        console.log("Performing App Ping", req);
+        console.info("Performing App Ping", data);
         // Perform the operation
-        $fh.act({
-                act: "app_ping",
-                req: req
+        $fh.cloud({
+                path: "cloud/app_ping",
+                data: data
             },
             function(res) {
                 if (!res.error) {
                     dataObj['appState'] = "RUNNING";
-                    $('span[app_status_indicator="' + req['deployParams']['target'] + '"]').removeClass("label-danger").addClass("label-success");
+                    $('span[app_status_indicator="' + data['deployParams']['target'] + '"]').removeClass("label-danger").addClass("label-success");
                     callback(dataObj);
                 } else {
                     dataObj['appState'] = "STOPPED";
-                    $('span[app_status_indicator="' + req['deployParams']['target'] + '"]').removeClass("label-success").addClass("label-danger");
+                    $('span[app_status_indicator="' + data['deployParams']['target'] + '"]').removeClass("label-success").addClass("label-danger");
                     callback(dataObj);
                 }
             },

@@ -12,13 +12,13 @@ define([
         events: {},
 
         initialize: function(options) {
-            console.log("Initializing SideBarView")
+            console.info("Initializing SideBarView")
             this.render = _.bind(this.render, this);
             this.sideBarData.bind('change', this.render);
         },
 
         render: function() {
-            console.log("Rendering SideBarView")
+            console.info("Rendering SideBarView")
             _.templateSettings.variable = "data";
             var compiledTemplate = _.template(SideBarTemplate, this.sideBarData);
             this.$el.html(compiledTemplate);

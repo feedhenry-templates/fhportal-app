@@ -13,11 +13,11 @@ backbone router.
 define([
     'backbone',
     'collection_path/UserData'
-], function(Backbone, UserData){
-    var initialize = function(options){
-        console.log("Initializing App Logic")
+], function(Backbone, UserData) {
+    var initialize = function(options) {
+        console.info("Initializing App Logic")
         var self = this;
-        
+
         // Create a user instance for login data
         App.globalUserData = new UserData;
     };
@@ -25,5 +25,3 @@ define([
         initialize: initialize
     };
 });
-
-

@@ -2,7 +2,7 @@
     Require.js allows us to configure shortcut alias for complex paths. 
     These will be used later in app_init
 */
-console.log("Initializing main.js -> Configuring RequireJS")
+console.info("Initializing main.js -> Configuring RequireJS")
 require.config({
     paths: {
         "jquery": '../components/jquery/jquery.min',
@@ -53,7 +53,7 @@ require(
     ['app'] // Load our app module and pass it to our definition function 
     , function(App) { // The "app" dependency is returned as "App"
         window.App = App;
-        console.log("Initializing App");
+        console.info("Initializing App");
         App.initialize();
     }
 );
