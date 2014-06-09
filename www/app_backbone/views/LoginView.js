@@ -163,7 +163,12 @@ define([
         },
 
         handleError: function(errorMsg) {
-            $('#alert').html(errorMsg);
+            console.error("Failure received: ", errorMsg);
+            if (typeof errorMsg === "object") {
+                $('#alert').html(errorMsg['errorMsg']);
+            } else {
+                $('#alert').html(errorMsg);
+            }
             $('#alert').toggleClass("in");
             setTimeout(function() {
                 $('#alert').toggleClass("in")
